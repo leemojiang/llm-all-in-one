@@ -7,7 +7,10 @@ requires-python = ">=3.12"
 dependencies = [
     "swanlab>=0.6.13",
     "transformers>=4.57.1",
+    "torch>=2.9.0",
+    "torchvision>=0.24.0",
 ]
+
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
@@ -41,17 +44,23 @@ name = "pytorch-cu126"
 url = "https://download.pytorch.org/whl/cu126"
 explicit = true
 [[tool.uv.index]]
+name = "pytorch-cu126_c"
+url = "https://mirrors.nju.edu.cn/pytorch/whl/cu126"
+explicit = true
+
+
+[[tool.uv.index]]
 name = "pytorch-cpu"
 url = "https://download.pytorch.org/whl/cpu"
 explicit = true
 
 [tool.uv.sources]
 torch = [
-  { index = "pytorch-cu126", extra = "cuda" },
+  { index = "pytorch-cu126_c", extra = "cuda" },
   { index = "pytorch-cpu", extra = "cpu" },
 ]
 torchvision = [
-  { index = "pytorch-cu126", extra = "cuda" },
+  { index = "pytorch-cu126_c", extra = "cuda" },
   { index = "pytorch-cpu", extra = "cpu" },
 ]
 
