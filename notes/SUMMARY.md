@@ -19,6 +19,5 @@
 - [训练技巧](topics/training-tricks.md) -->
 
 # 附录
+- [Pytorch Cookbook](appendix/pytorch.md)
 
-- [参考资料](appendix/references.md)
-- [Q&A](appendix/qa.md)
