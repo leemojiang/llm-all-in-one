@@ -13,6 +13,10 @@
 - [理解 Attention 机制](pretrain/3.attention.md)
 - [模型总览: 一个预训练模型由哪些部分组成?](pretrain/2.model-overview.md)
     - [RoPE: 位置编码如何进入 Attention?](pretrain/2a.rope.md)
+    - [FlashAttention: attention 为什么还能更快?](pretrain/2b.flash-attention.md)
+    - [GQA: 为什么 Query head 和 KV head 可以不一样?](pretrain/2c.gqa.md)
+    - [KV Cache: 自回归推理为什么能避免重复计算?](pretrain/2d.kv-cache.md)
+    - [Long Context: 长上下文能力通常在改什么?](pretrain/2e.long-context.md)
 
 
 # Pretrain - Training
