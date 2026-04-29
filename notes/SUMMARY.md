@@ -23,7 +23,11 @@
 
 # Pretrain - Training
 - [Pretrain 训练导言](pretrain/training-index.md)
-- [MiniMind Pretrain 实践入口](pretrain/4.practice.md)
+- [Pretrain 的训练目标和 Loss](pretrain/1.loss.md)
+- [优化器、学习率和数据设置](pretrain/2.optimizer-lr-data.md)
+- [Pretrain 的实施细节和常见坑](pretrain/3.training-details.md)
+- [Pretrain 的 Eval 指标](pretrain/4.eval.md)
+- [MiniMind Pretrain 实践入口](pretrain/1.Pretrain.md)
 <!-- # 训练篇
 
 - [Pretrain](training/pretrain.md)
