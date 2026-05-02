@@ -6,6 +6,8 @@
 
 仓库中保留了上游参考代码，也加入了我自己的代码阅读、实验记录与笔记整理。相比单纯摘录概念，我更希望把“模型原理”“训练流程”“工程实现”“实践经验”放在同一个语境中串联起来，形成一份可以持续扩展的个人知识库，也尽量让它对其他正在入门 LLM 的学习者有帮助。
 
+[在线预览](https://leemojiang.github.io/llm-all-in-one/)
+
 ## 这个项目想解决什么问题
 
 在学习 LLM 的过程中，我越来越强烈地感受到两个问题：
@@ -81,7 +83,7 @@ mdbook serve
 
 如果你希望通过 GitHub Pages 在线阅读，也可以直接访问部署后的文档站点：
 
-- GitHub Pages: `https://leemojiang.github.io/llm-from-scratch/`
+- GitHub Pages: `https://leemojiang.github.io/llm-all-in-one/`
 
 ## 笔记入口
 
