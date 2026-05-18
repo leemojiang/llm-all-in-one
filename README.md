@@ -7,7 +7,7 @@
 仓库中保留了上游参考代码，也加入了我自己的代码阅读、实验记录与笔记整理。相比单纯摘录概念，我更希望把“模型原理”“训练流程”“工程实现”“实践经验”放在同一个语境中串联起来，形成一份可以持续扩展的个人知识库，也尽量让它对其他正在入门 LLM 的学习者有帮助。
 
 >项目已经使用Github Pages在线部署:
-[在线访问](https://leemojiang.github.io/llm-all-in-one/)
+[在线访问](https://leemojiang.github.io/llm-notes-all-in-one/)
 
 ## 这个项目想解决什么问题
 
@@ -72,7 +72,7 @@ uv pip install -e .
 swanlab login
 ```
 
-## 本地阅读笔记
+## 阅读笔记
 
 如果本地已经安装 `mdbook`，可以直接在仓库根目录运行：
 
@@ -84,12 +84,12 @@ mdbook serve
 
 如果你希望通过 GitHub Pages 在线阅读，也可以直接访问部署后的文档站点：
 
-- GitHub Pages: `https://leemojiang.github.io/llm-all-in-one/`
+- GitHub Pages: `https://leemojiang.github.io/llm-notes-all-in-one/`
 
-## 笔记入口
+<!-- ## 笔记入口
 
 推荐使用Github Pages在线访问
-[在线访问](https://leemojiang.github.io/llm-all-in-one/)
+[在线访问](https://leemojiang.github.io/llm-notes-all-in-one/)
 
 - [目录总览](notes/SUMMARY.md)  
 # Quick Start
@@ -123,7 +123,7 @@ mdbook serve
 - [Pytorch Cookbook](notes/appendix/pytorch.md)
 
 # 参考
-- [参考资料与引用](notes/ref/index.md)
+- [参考资料与引用](notes/ref/index.md) -->
 
 ## 引用
 
@@ -132,7 +132,7 @@ mdbook serve
 **Cited as:**
 
 > LEE. (May 2026). LLM ALL in One: 从零开始构建大型语言模型.  
-> https://github.com/leemojiang/llm-all-in-one
+> https://github.com/leemojiang/llm-notes-all-in-one
 
 Or
 
@@ -142,7 +142,7 @@ Or
   author       = {LEE},
   year         = {2026},
   month        = may,
-  howpublished = {\url{https://github.com/leemojiang/llm-all-in-one}},
+  howpublished = {\url{https://github.com/leemojiang/llm-notes-all-in-one}},
   note         = {GitHub repository}
 }
 ```
