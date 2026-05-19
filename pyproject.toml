@@ -1,5 +1,5 @@
 [project]
-name = "llm-from-scratch"
+name = "minimind_learning"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -9,6 +9,7 @@ dependencies = [
     "transformers>=4.57.1",
     "torch>=2.9.0",
     "torchvision>=0.24.0",
+    "datasets>=4.8.5",
 ]
 
 

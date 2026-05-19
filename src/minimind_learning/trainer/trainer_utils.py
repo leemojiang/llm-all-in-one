@@ -79,6 +79,7 @@ def lm_checkpoint(
     optimizer=None,
     epoch=0,
     step=0,
+    tokens_seen=0,
     wandb=None,
     save_dir="../checkpoints",
     **kwargs,
@@ -112,6 +113,7 @@ def lm_checkpoint(
             "optimizer": optimizer.state_dict() if optimizer is not None else None,
             "epoch": epoch,
             "step": step,
+            "tokens_seen": tokens_seen,
             "world_size": dist.get_world_size() if dist.is_initialized() else 1,
             "wandb_id": wandb_id,
         }
@@ -168,7 +170,7 @@ def save_config_to_json(save_dir: str, args: Namespace, config: MiniMindConfig):
     Logger(f"参数和配置已保存到 {save_path}")
 
 
-def init_model(lm_config, from_weight="pretrain", tokenizer_path="../model", save_dir="../out", device="cuda"):
+def init_model(lm_config, from_weight="pretrain", tokenizer_path="../tokenizer", save_dir="../out", device="cuda"):
     from transformers import AutoTokenizer
 
     from minimind_learning.model.model_minimind import MiniMindForCausalLM

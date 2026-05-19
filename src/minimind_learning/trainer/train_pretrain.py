@@ -25,20 +25,27 @@ from minimind_learning.trainer.trainer_utils import (
 )
 
 
-def train_epoch(epoch, loader, iters, start_step=0, wandb=None):
+def train_epoch(epoch, loader, iters, start_step=0, start_tokens_seen=0, wandb=None):
     """
-    epoch: 当前 epoch
-    iters: 当前 epoch 最大迭代步数
+    epoch: 当前 epoch (数据集走的次数)
+    iters: 每个 epoch 最大迭代步数/总的steps数,始终等于 num_samples // batch_size
+    step: 走了多少个mini-batch (注意Effective batch size = batch_size * accumulation_steps)
     """
     start_time = time.time()
     last_step = start_step
+    tokens_seen = int(start_tokens_seen)
     for step, (input_ids, labels) in enumerate(loader, start=start_step + 1):
         # B batch size, L seq_len
-        input_ids = input_ids.to(args.device)
-        labels = labels.to(args.device)
+        input_ids = input_ids.to(args.device) # input_ids shape: [B, L]
+        labels = labels.to(args.device) # labels shape: [B, L]
         last_step = step
+        # 统计tokens_seen，分布式训练时需要全局同步
+        batch_tokens = (labels != -100).sum()
+        if dist.is_initialized():
+            dist.all_reduce(batch_tokens, op=dist.ReduceOp.SUM)
+        tokens_seen += int(batch_tokens.item())
 
-        # 手动修改 LR
+        # 这里的LR 是按照 mini-batch/micro-batch/step 来调整的,而不是effective batch size.
         lr = get_lr(epoch * iters + step, args.epochs * iters, args.learning_rate)
         for param_group in optimizer.param_groups:
             param_group["lr"] = lr
@@ -72,7 +79,8 @@ def train_epoch(epoch, loader, iters, start_step=0, wandb=None):
             Logger(
                 f"Epoch:[{epoch + 1}/{args.epochs}]({step}/{iters}), "
                 f"loss: {current_loss:.4f}, logits_loss: {current_logits_loss:.4f}, "
-                f"aux_loss: {current_aux_loss:.4f}, lr: {current_lr:.8f}, epoch_time: {eta_min:.1f}min"
+                f"aux_loss: {current_aux_loss:.4f}, lr: {current_lr:.8f}, "
+                f"tokens_seen: {tokens_seen}, epoch_time: {eta_min:.1f}min"
             )
 
             if wandb:
@@ -82,7 +90,9 @@ def train_epoch(epoch, loader, iters, start_step=0, wandb=None):
                         "logits_loss": current_logits_loss,
                         "aux_loss": current_aux_loss,
                         "learning_rate": current_lr,
+                        "tokens_seen": tokens_seen,
                         "epoch_time": eta_min,
+                        "step": epoch * iters + step,
                     }
                 )
 
@@ -100,6 +110,7 @@ def train_epoch(epoch, loader, iters, start_step=0, wandb=None):
                 scaler=scaler,
                 epoch=epoch,
                 step=step,
+                tokens_seen=tokens_seen,
                 wandb=wandb,
                 save_dir="../checkpoints",
             )
@@ -115,6 +126,7 @@ def train_epoch(epoch, loader, iters, start_step=0, wandb=None):
         scaler.step(optimizer)
         scaler.update()
         optimizer.zero_grad(set_to_none=True)
+    return tokens_seen
 
 
 if __name__ == "__main__":
@@ -177,13 +189,14 @@ if __name__ == "__main__":
     optimizer = optim.AdamW(model.parameters(), lr=args.learning_rate)
 
     # ========== 6. 从 ckp 恢复状态 ==========
-    start_epoch, start_step = 0, 0
+    start_epoch, start_step, start_tokens_seen = 0, 0, 0
     if ckp_data:
         model.load_state_dict(ckp_data["model"])
         optimizer.load_state_dict(ckp_data["optimizer"])
         scaler.load_state_dict(ckp_data["scaler"])
         start_epoch = ckp_data["epoch"]
         start_step = ckp_data.get("step", 0)
+        start_tokens_seen = ckp_data.get("tokens_seen", 0)
 
     # ========== 7. 编译和分布式包装 ==========
     if args.use_compile == 1:
@@ -202,9 +215,14 @@ if __name__ == "__main__":
         loader = DataLoader(train_ds, batch_sampler=batch_sampler, num_workers=args.num_workers, pin_memory=True)
         if skip > 0:
             Logger(f"Epoch [{epoch + 1}/{args.epochs}]: 跳过前{start_step}个step，从step {start_step + 1}开始")
-            train_epoch(epoch, loader, len(loader) + skip, start_step, wandb)
+
+            # 这个Iters参数是因为skip-sampler导致的
+            # 如果某个 epoch 原本有 1000 个 batch，checkpoint 存在 start_step=400，那么 SkipBatchSampler 会让 loader 只剩 600 个 batch。此时传：
+            # iters = len(loader) + skip = 600 + 400 = 1000 保持总迭代数目不变
+
+            start_tokens_seen = train_epoch(epoch, loader, len(loader) + skip, start_step, start_tokens_seen, wandb)
         else:
-            train_epoch(epoch, loader, len(loader), 0, wandb)
+            start_tokens_seen = train_epoch(epoch, loader, len(loader), 0, start_tokens_seen, wandb)
 
     # ========== 9. 清理分布式进程 ==========
     if dist.is_initialized():

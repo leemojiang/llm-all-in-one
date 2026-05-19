@@ -30,7 +30,7 @@ class RMSNorm(torch.nn.Module):
         x: [batch_size, seq_len, dim]
         return: [batch_size, seq_len, dim]
         """
-        return self.weights.type_as(x) * self._norm(x.float()).type_as(
+        return self.weight.type_as(x) * self.norm(x.float()).type_as(
             x
         )  # 处理不同的类型转化很重要
 

@@ -1,23 +1,13 @@
 import json
 import os
 import random
-from typing import List
 
 import torch
+from datasets import Features, Value, load_dataset
 from torch.utils.data import Dataset
 
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-
-
-def load_jsonl(path) -> List[dict]:
-    samples = []
-    with open(path, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                samples.append(json.loads(line))
-    return samples
 
 
 def pre_processing_chat(conversations, add_system_ratio=0.2):
@@ -54,7 +44,7 @@ class PretrainDataset(Dataset):
         super().__init__()
         self.tokenizer = tokenizer
         self.max_length = max_length
-        self.samples = load_jsonl(data_path)
+        self.samples = load_dataset("json", data_files=data_path, split="train")
 
     def __len__(self):
         return len(self.samples)
@@ -84,7 +74,21 @@ class SFTDataset(Dataset):
         super().__init__()
         self.tokenizer = tokenizer
         self.max_length = max_length
-        self.samples = load_jsonl(jsonl_path)
+        features = Features(
+            {
+                "conversations": [
+                    {
+                        "role": Value("string"),
+                        "content": Value("string"),
+                        "reasoning_content": Value("string"),
+                        "tools": Value("string"),
+                        "functions": Value("string"),
+                        "tool_calls": Value("string"),
+                    }
+                ]
+            }
+        )
+        self.samples = load_dataset("json", data_files=jsonl_path, split="train", features=features)
         self.bos_id = tokenizer(f"{tokenizer.bos_token}assistant\n", add_special_tokens=False).input_ids
         self.eos_id = tokenizer(f"{tokenizer.eos_token}\n", add_special_tokens=False).input_ids
 
@@ -154,7 +158,7 @@ class DPODataset(Dataset):
         # 特殊标记：assistant 段落开始和结束。
         self.bos_id = tokenizer(f"{tokenizer.bos_token}assistant\n", add_special_tokens=False).input_ids
         self.eos_id = tokenizer(f"{tokenizer.eos_token}\n", add_special_tokens=False).input_ids
-        self.samples = load_jsonl(file_path)
+        self.samples = load_dataset("json", data_files=file_path, split="train")
 
     def __len__(self):
         return len(self.samples)
