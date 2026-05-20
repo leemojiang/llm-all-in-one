@@ -28,6 +28,8 @@
 - [Pretrain 的实施细节和常见坑](pretrain/3.training-details.md)
 - [Pretrain 的 Eval 指标](pretrain/4.eval.md)
 - [MiniMind Pretrain 实践入口](pretrain/1.Pretrain.md)
+- [MiniMind Pretrain 实践总结](pretrain/1.Pretrain2.md)
+
 <!-- # 训练篇
 
 - [Pretrain](training/pretrain.md)
@@ -39,6 +41,9 @@
 - [Tokenizer](topics/tokenizer.md)
 - [Transformer](topics/transformer.md)
 - [训练技巧](topics/training-tricks.md) -->
+
+# Utils
+- [MiniMind 3 升级内容](utils/minimind3_upgrade.md)
 
 # 附录
 - [Pytorch Cookbook](appendix/pytorch.md)
